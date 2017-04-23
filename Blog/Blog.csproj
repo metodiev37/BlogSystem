@@ -208,6 +208,7 @@
     <Compile Include="Models\Article.cs" />
     <Compile Include="Models\ArticleViewModel.cs" />
     <Compile Include="Models\BlogDbContext.cs" />
+    <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ReqiredAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

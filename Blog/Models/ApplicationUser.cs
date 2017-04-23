@@ -11,8 +11,20 @@ namespace Blog.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        private ICollection<Comment> comments;
+        public ApplicationUser()
+        {
+            this.comments = new HashSet<Comment>();
+        }
+
         [Reqired]
         public string FullName { get; set; }
+
+        public virtual ICollection<Comment> Comments
+        {
+            get { return comments; }
+            set { comments = value; }
+        }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);

@@ -9,6 +9,12 @@ namespace Blog.Models
 {
     public class Article
     {
+        private ICollection<Comment> comments;
+
+        public Article()
+        {
+            this.comments = new HashSet<Comment>();
+        }
         [Key]
         public int Id { get; set; }
 
@@ -22,6 +28,12 @@ namespace Blog.Models
         public string AuthorId { get; set; }
 
         public virtual ApplicationUser Author { get; set; }
+
+        public virtual ICollection<Comment> Comments
+        {
+            get { return comments; }
+            set { comments = value; }
+        }
 
         public bool IsAuthor(string name)
         {
