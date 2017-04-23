@@ -38,7 +38,7 @@ namespace Blog.Controllers
 
             using (var database = new BlogDbContext())
             {
-                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).First();
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).Include(com => com.Comments).First();
 
                 if (article == null)
                 {
@@ -187,6 +187,11 @@ namespace Blog.Controllers
 
             return View(model);
         }
+      
+        //public ActionResult DeleteComment(int id)
+        //{
+        //    return RedirectToAction("Details", new { id = comment.ArticleId });
+        //}
 
         private bool IsUserAuthorizedToEdit(Article article)
         {

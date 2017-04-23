@@ -17,6 +17,26 @@
         <small class="author">
             --author @Model.Author.FullName
         </small>
+        @Html.ActionLink("Create","CreateComment","Comments",new { articleId = Model.Id}, null)
+        @foreach(var comment in Model.Comments)
+        {
+            <div>
+
+                <p>
+                    @comment.Content
+                </p>
+                <p>
+                    @comment.Author.FullName
+                </p>
+
+                @if (User.IsInRole("Admin") || Model.IsAuthor(User.Identity.Name))
+                {
+                    @Html.ActionLink("Edit", "Edit", "Comments", new { @id = comment.Id }, new { @class = "btn btn-success btn-xs" })
+                    @Html.ActionLink("Delete", "Delete", "Comments", new { @id = comment.Id }, new { @class = "btn btn-danger btn-xs" })
+                }
+
+            </div>
+        }
         <footer class="pull-right">
             @if (User.IsInRole("Admin") || Model.IsAuthor(User.Identity.Name))
             {

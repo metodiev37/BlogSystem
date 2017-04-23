@@ -17,5 +17,14 @@ namespace Blog.Models
         public string AuthorId { get; set; }
 
         public virtual ApplicationUser Author { get; set; }
+        [ForeignKey("Article")]
+        public int ArticleId { get; set; }
+
+        public virtual Article Article { get; set; }
+
+        public bool IsAuthor(string name)
+        {
+            return this.Author.UserName.Equals(name);
+        }
     }
 }
