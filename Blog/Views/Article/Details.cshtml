@@ -4,24 +4,26 @@
     ViewBag.Title = "Details";
 }
 <style>
-    #author{
-        color:#333;
-        background-color:#f5f5f5;
+    #author {
+        color: #333;
+        background-color: #f5f5f5;
         border-radius: 20px 20px 0 0;
-        padding-left:15px;
-        height:30px;
+        padding-left: 15px;
+        height: 30px;
     }
-    #content{
-        padding:10px;
-        color:#333;
+
+    #content {
+        padding: 10px;
+        color: #333;
         border-top: 1px solid #ddd;
     }
-    #container{
+
+    #container {
         border-radius: 20px;
-        border:1px solid #ddd;
-        margin-bottom:10px;
-        height:100px;
-        width:400px;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        height: 100px;
+        width: 400px;
     }
 </style>
 <div class="container">
@@ -37,18 +39,18 @@
         <small class="author">
             --author @Model.Author.FullName
         </small>
-        @Html.ActionLink("Create","CreateComment","Comments",new { articleId = Model.Id}, null)
-        @foreach(var comment in Model.Comments)
+        @Html.ActionLink("Create", "CreateComment", "Comments", new { articleId = Model.Id }, null)
+        @foreach (var comment in Model.Comments)
         {
             <div id="container">
                 <small class="author" id="author">
                     @comment.Author.FullName Added:@comment.DateCreated
                 </small>
-                
+
                 <p class="glyphicon-comment" id="content" style="margin-bottom: 0px;">
                     @comment.Content
                 </p>
-                
+
 
                 @if (User.IsInRole("Admin") || comment.IsAuthor(User.Identity.Name))
                 {
@@ -63,14 +65,43 @@
 
             </div>
         }
-        <footer class="pull-right">
-            @if (User.IsInRole("Admin") || Model.IsAuthor(User.Identity.Name))
-            {
-                @Html.ActionLink("Edit", "Edit", "Article", new { @id = Model.Id }, new { @class = "btn btn-success btn-xs" })
-                @Html.ActionLink("Delete", "Delete", "Article", new { @id = Model.Id }, new { @class = "btn btn-danger btn-xs" })
-            }
+        <footer>
+            <div class="pull-right">
+                @if (User.IsInRole("Admin") || Model.IsAuthor(User.Identity.Name))
+                {
+                    @Html.ActionLink("Edit", "Edit", "Article", new { @id = Model.Id }, new { @class = "btn btn-success btn-xs" })
+                    @Html.ActionLink("Delete", "Delete", "Article", new { @id = Model.Id }, new { @class = "btn btn-danger btn-xs" })
+                }
 
-            @Html.ActionLink("Back", "Index", "Article", null, new { @class = "btn btn-default btn-xs" })
+                @Html.ActionLink("Back", "Index", "Article", null, new { @class = "btn btn-default btn-xs" })
+
+            </div>
+            <div class="pull-left">
+                @if (Request.IsAuthenticated)
+                {
+                    <span>Likes: @Model.PeopleWhoLiked.Count</span>
+                    if (Model.IsLikedByUser(User.Identity.Name))
+                    {
+                        using (@Html.BeginForm("UnlikePost", "Article", FormMethod.Post))
+                        {
+                            @Html.HiddenFor(model => model.Id);
+
+                            <input type="submit" value="Unlike" class="btn btn-success btn-xs" />
+                        }
+                    }
+                    else
+                    {
+                        using (@Html.BeginForm("LikePost", "Article", FormMethod.Post))
+                        {
+                            @Html.HiddenFor(model => model.Id);
+
+                            <input type="submit" value="Like" class="btn btn-success btn-xs" />
+                        }
+                    }
+                }
+
+            </div>
+
         </footer>
     </article>
 </div>

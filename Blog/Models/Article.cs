@@ -10,10 +10,12 @@ namespace Blog.Models
     public class Article
     {
         private ICollection<Comment> comments;
-
+        private ICollection<ApplicationUser> peopleWhoLiked;
+        
         public Article()
         {
             this.comments = new HashSet<Comment>();
+            this.peopleWhoLiked = new HashSet<ApplicationUser>(); 
         }
         [Key]
         public int Id { get; set; }
@@ -35,9 +37,20 @@ namespace Blog.Models
             set { comments = value; }
         }
 
+        public virtual ICollection<ApplicationUser> PeopleWhoLiked
+        {
+            get { return peopleWhoLiked; }
+            set { peopleWhoLiked = value; }
+        }
+
         public bool IsAuthor(string name)
         {
             return this.Author.UserName.Equals(name);
+        }
+
+        public bool IsLikedByUser(string userName)
+        {
+            return this.PeopleWhoLiked.Any(user => user.UserName.Equals(userName));           
         }
     }
 }

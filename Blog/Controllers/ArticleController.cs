@@ -38,7 +38,7 @@ namespace Blog.Controllers
 
             using (var database = new BlogDbContext())
             {
-                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).Include(com => com.Comments).Include(com => com.Comments.Select(c=>c.Author)).First();
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).Include(com => com.Comments).Include(com => com.Comments.Select(c=>c.Author)).Include(ar => ar.PeopleWhoLiked).First();
 
                 if (article == null)
                 {
@@ -187,12 +187,60 @@ namespace Blog.Controllers
 
             return View(model);
         }
-      
-        //public ActionResult DeleteComment(int id)
-        //{
-        //    return RedirectToAction("Details", new { id = comment.ArticleId });
-        //}
 
+        [HttpPost]
+        public ActionResult LikePost(int id)
+        {
+            using(var database = new BlogDbContext())
+            {
+                var author = database.Users.Where(u => u.UserName == this.User.Identity.Name).First();
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).First();
+
+                author.LikedPosts.Add(article);
+                database.SaveChanges();
+
+            }
+            return RedirectToAction("Details", "Article", new { id = id });
+
+        }
+        [HttpPost]
+        public ActionResult UnlikePost(int id)
+        {
+            using (var database = new BlogDbContext())
+            {
+                var author = database.Users.Where(u => u.UserName == this.User.Identity.Name).First();
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).First();
+
+                author.LikedPosts.Remove(article);
+                database.SaveChanges();
+
+            }
+            return RedirectToAction("Details", "Article", new { id = id });
+        }
+        [HttpGet]
+        public ActionResult ViewMyFavourites()
+        {
+            ApplicationUser user;
+            using (var database = new BlogDbContext())
+            {
+                 user = database.Users.Where(u => u.UserName == this.User.Identity.Name).Include(us => us.LikedPosts).Include(us =>us.LikedPosts.Select(ar => ar.Author)).First();
+            }
+
+            var favouriteArticles = user.LikedPosts.ToList();
+
+            return View(favouriteArticles);
+        }
+
+        public ActionResult SearchArticles(string text)
+        {
+            List<Article> articles = new List<Article>();
+            using (var database = new BlogDbContext())
+            {
+                articles = database.Articles.Include(art => art.Author).Where(art => art.Content.Contains(text) || art.Title.Contains(text)).ToList();
+            }
+            return View("List", articles);
+        }
+      
         private bool IsUserAuthorizedToEdit(Article article)
         {
             bool isAdmin = this.User.IsInRole("Admin");
