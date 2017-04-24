@@ -33,6 +33,7 @@ namespace Blog.Controllers
             {
                 var authorId = database.Users.FirstOrDefault(user => user.UserName == this.User.Identity.Name).Id;
                 comment.AuthorId = authorId;
+                comment.DateCreated = DateTime.Now;
                 database.Entry(comment).State = EntityState.Added;
                 database.SaveChanges();            
             }
@@ -91,12 +92,69 @@ namespace Blog.Controllers
             return RedirectToAction("Details", "Article", new { id = model.ArticleId });
         }
 
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }   
+                    
+            using (var database = new BlogDbContext())
+            {
+                var comment = database.Comments.Where(com => com.Id == id).Include(com => com.Author).First();               
+                if (!IsUserAuthorizedToEdit(comment) && !IsUserAthoriziedToDelete(comment))
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+
+                if (comment == null)
+                {
+                    return HttpNotFound();
+                }
+
+                return View(comment);
+            }
+        }
+
+        // POST: Article/Delete
+        [HttpPost]
+        [ActionName("Delete")]
+
+        public ActionResult DeleteConfirmed(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            int articleId;
+            using (var database = new BlogDbContext())
+            {
+                var comment = database.Comments.Where(com => com.Id == id).Include(com => com.Author).First();
+                articleId = comment.ArticleId;
+                if (comment == null)
+                {
+                    return HttpNotFound();
+                }
+
+                database.Comments.Remove(comment);
+                database.SaveChanges();
+
+                return RedirectToAction("Details", "Article", new { id = articleId });
+            }
+        }
+
         private bool IsUserAuthorizedToEdit(Comment comment)
         {
             bool isAdmin = this.User.IsInRole("Admin");
             bool isAuthor = comment.IsAuthor(this.User.Identity.Name);
 
             return isAdmin || isAuthor;
+        }
+
+        private bool IsUserAthoriziedToDelete(Comment comment)
+        {
+            bool isAuthorOnArticle = comment.Article.IsAuthor(this.User.Identity.Name);
+            return isAuthorOnArticle;
         }
     }
 }

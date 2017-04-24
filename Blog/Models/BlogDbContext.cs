@@ -24,6 +24,6 @@ namespace Blog.Models
         {
             return new BlogDbContext();
         }
-       
+      
     }
 }

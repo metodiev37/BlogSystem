@@ -10,8 +10,11 @@ namespace Blog.Models
     public class Comment
     {
         [Key]
-        public int Id { get; set; }       
+        public int Id { get; set; }      
+        [MaxLength(500)] 
         public string Content { get; set; }
+
+        public DateTime DateCreated { get; set; }
 
         [ForeignKey("Author")]
         public string AuthorId { get; set; }
@@ -26,5 +29,6 @@ namespace Blog.Models
         {
             return this.Author.UserName.Equals(name);
         }
+
     }
 }
