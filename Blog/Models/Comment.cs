@@ -14,6 +14,7 @@ namespace Blog.Models
         [MaxLength(500)] 
         public string Content { get; set; }
 
+        [DisplayFormat(DataFormatString = "MM/dd/yyyy")]
         public DateTime DateCreated { get; set; }
 
         [ForeignKey("Author")]

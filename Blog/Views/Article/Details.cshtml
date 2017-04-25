@@ -9,6 +9,7 @@
         background-color: #f5f5f5;
         border-radius: 20px 20px 0 0;
         padding-left: 15px;
+        padding-top: 5px;
         height: 30px;
     }
 
@@ -16,14 +17,17 @@
         padding: 10px;
         color: #333;
         border-top: 1px solid #ddd;
+        text-align:justify;
     }
 
     #container {
         border-radius: 20px;
         border: 1px solid #ddd;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         height: 100px;
         width: 400px;
+        overflow:auto;
+        padding-bottom: 5px;
     }
 </style>
 <div class="container">
@@ -37,21 +41,49 @@
             @Model.Content
         </p>
         <small class="author">
-            --author @Model.Author.FullName
+            Autor: @Model.Author.FullName
         </small>
-        @Html.ActionLink("Create", "CreateComment", "Comments", new { articleId = Model.Id }, null)
+        <br />
+        <div style="margin-bottom: 5px">
+            @Html.ActionLink("Create Comment", "CreateComment", "Comments", new { articleId = Model.Id }, new { @class = "btn btn-success btn-xs" })
+        </div>
+        <div class="pull-right">
+            @if (Request.IsAuthenticated)
+            {
+                <small class="author">Likes: @Model.PeopleWhoLiked.Count</small>
+                if (Model.IsLikedByUser(User.Identity.Name))
+                {
+                    using (@Html.BeginForm("UnlikePost", "Article", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(model => model.Id);
+
+                        <input type="submit" value="Unlike" class="btn btn-success btn-xs" />
+                    }
+                }
+                else
+                {
+                    using (@Html.BeginForm("LikePost", "Article", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(model => model.Id);
+
+                        <input type="submit" value="Like" class="btn btn-success btn-xs" />
+                    }
+                }
+            }
+
+        </div>
+        
         @foreach (var comment in Model.Comments)
         {
             <div id="container">
-                <small class="author" id="author">
-                    @comment.Author.FullName Added:@comment.DateCreated
-                </small>
-
-                <p class="glyphicon-comment" id="content" style="margin-bottom: 0px;">
+                <div>
+                    <small class="author" id="author"><span style="font-size: 11px;">By:</span> @comment.Author.FullName <span class="badge" style="float:right; margin-right: 8px">Added: @Convert.ToString(string.Format("{0:dd/MM/yyyy}", comment.DateCreated.Date))</span></small>
+                </div>
+                <p class="tab-content" id="content" style="margin-bottom: 0px;">
                     @comment.Content
                 </p>
-
-
+            </div>
+            <div style="margin-bottom: 10px">
                 @if (User.IsInRole("Admin") || comment.IsAuthor(User.Identity.Name))
                 {
                     @Html.ActionLink("Edit", "Edit", "Comments", new { @id = comment.Id }, new { @class = "btn btn-success btn-xs" })
@@ -62,8 +94,8 @@
                 {
                     @Html.ActionLink("Delete", "Delete", "Comments", new { @id = comment.Id }, new { @class = "btn btn-danger btn-xs" })
                 }
-
             </div>
+
         }
         <footer>
             <div class="pull-right">
@@ -74,31 +106,6 @@
                 }
 
                 @Html.ActionLink("Back", "Index", "Article", null, new { @class = "btn btn-default btn-xs" })
-
-            </div>
-            <div class="pull-left">
-                @if (Request.IsAuthenticated)
-                {
-                    <span>Likes: @Model.PeopleWhoLiked.Count</span>
-                    if (Model.IsLikedByUser(User.Identity.Name))
-                    {
-                        using (@Html.BeginForm("UnlikePost", "Article", FormMethod.Post))
-                        {
-                            @Html.HiddenFor(model => model.Id);
-
-                            <input type="submit" value="Unlike" class="btn btn-success btn-xs" />
-                        }
-                    }
-                    else
-                    {
-                        using (@Html.BeginForm("LikePost", "Article", FormMethod.Post))
-                        {
-                            @Html.HiddenFor(model => model.Id);
-
-                            <input type="submit" value="Like" class="btn btn-success btn-xs" />
-                        }
-                    }
-                }
 
             </div>
 

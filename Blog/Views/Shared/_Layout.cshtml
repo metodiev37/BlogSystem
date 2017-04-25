@@ -18,7 +18,15 @@
                 </button>
                 @Html.ActionLink("SOFTUNI BLOG", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
-            
+            <div class="navbar-header" style="margin-top: 15px">
+                @using (Html.BeginForm("SearchArticles", "Article", FormMethod.Get))
+                {
+                    @Html.Label("text")
+                    @Html.Editor("text")
+
+                    <button type="submit">Search</button>
+                }
+            </div>
             <div class="navbar-collapse collapse">
                 @Html.Partial("_LoginPartial")
             </div>

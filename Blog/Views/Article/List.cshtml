@@ -3,15 +3,6 @@
 @{
     ViewBag.Title = "List";
 }
-<div>
-    @using (Html.BeginForm("SearchArticles", "Article", FormMethod.Get))
-    {
-        @Html.Label("text")
-        @Html.Editor("text")
-
-        <button type="submit">Search</button>
-    }
-</div>
 
 <div class="container">  
     <div class="row">
@@ -24,7 +15,7 @@
                             @Html.ActionLink(@article.Title, "Details", "Article", new { @id = article.Id }, null)
                         </h2>
                     </header>
-                    <p>
+                    <p style="text-align: justify">
                         @article.Content
                     </p>
                     <footer class="pull-right">
